@@ -12,12 +12,13 @@ public class CameraFollow : MonoBehaviour
         Vertical = 2,
     }
 
-    public Transform target = null;
-    public bool followPlayer = true;
+    public ICameraHolder target;
     [SerializeField] float smoothSpeed = 0.2f;
-    [SerializeField] Vector3 min = new Vector3(-5.0f, -5.0f, 0.0f), max = new Vector3(5.0f, 5.0f, 0.0f);
-    public Vector3 playerOffset = new Vector3(0.0f, 0.0f, -10.0f);
-    public Vector3 otherOffset = new Vector3(0.0f, 0.0f, -10.0f);
+    [SerializeField] 
+    Vector2 min = new Vector2(-5.0f, -5.0f), 
+            max = new Vector2(5.0f, 5.0f);
+    [Tooltip("Offset for positional z should always be -10.0f")]
+    [SerializeField] float cameraZOffset = -10.0f;
 
     [Header("Peek Variables")]
     [SerializeField] PeekBools peekAxes = (PeekBools)(-1);
@@ -30,31 +31,46 @@ public class CameraFollow : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 targetPos;
+        // Initialize targetPos
+        Vector3 targetPos = target.Position();
 
-        if (followPlayer)
+        // Calculate peek if any
+        if (peek)
         {
             Vector3 peekOffset = new Vector3();
-            if (peek)
-            {
-                peekOffset = new Vector3(
-                    (peekAxes & PeekBools.Horizontal) != PeekBools.None ? Input.GetAxisRaw("Horizontal") : 0,
-                    (peekAxes & PeekBools.Vertical) != PeekBools.None ? Input.GetAxisRaw("Vertical") : 0,
-                    0);
-                peekOffset.Scale(peekPower);
-            }
-
-            targetPos = (target.position + peekOffset).Clamp(min, max) + playerOffset;
+            peekOffset = new Vector3(
+                (peekAxes & PeekBools.Horizontal) != PeekBools.None ? Input.GetAxisRaw("Horizontal") : 0,
+                (peekAxes & PeekBools.Vertical) != PeekBools.None ? Input.GetAxisRaw("Vertical") : 0,
+                0);
+            peekOffset.Scale(peekPower);
+            targetPos += peekOffset;
         }
-        else
-            targetPos = target.position + otherOffset;
+        // Clamp targetPos and apply Offset
+        targetPos = targetPos.Clamp(min, max) + target.CameraOffset();
 
-        transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref currentVelocity, smoothSpeed);
+        // Combine positional and Orthographic size data
+        Vector3 preData = transform.position;
+        preData.z = Camera.main.orthographicSize;
+
+        // Calculate SmoothDamp for data
+        Vector3 translateData = Vector3.SmoothDamp(preData, targetPos, ref currentVelocity, smoothSpeed);
+
+        // Apply Orthographic and positional data
+        Camera.main.orthographicSize = translateData.z;
+
+        translateData.z = cameraZOffset;
+        transform.position = translateData;
     }
 
     private void OnDrawGizmosSelected()
     {
-        Vector3 bounds = max - min;
+        Vector2 bounds = max - min;
         Gizmos.DrawWireCube(min + bounds / 2, bounds);
     }
+}
+
+public interface ICameraHolder
+{
+    public Vector3 CameraOffset();
+    public Vector3 Position();
 }

@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
     {
         globalLightColor = globalLight.color;
 
+        cam.target = player;
+
         livesCounter.ToggleUI();
     }
 
@@ -38,10 +40,10 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (!cam.followPlayer)
+        if (!cam.peek)
         {
-            cam.target = player.transform;
-            cam.followPlayer = true;
+            cam.target = player;
+            cam.peek = true;
         }
 
         globalLight.color = globalLightColor;
