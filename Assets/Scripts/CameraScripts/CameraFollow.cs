@@ -37,12 +37,12 @@ public class CameraFollow : MonoBehaviour
         // Calculate peek if any
         if (peek)
         {
-            Vector3 peekOffset = new Vector3();
-            peekOffset = new Vector3(
+            Vector3 peekOffset = new Vector3(
                 (peekAxes & PeekBools.Horizontal) != PeekBools.None ? Input.GetAxisRaw("Horizontal") : 0,
                 (peekAxes & PeekBools.Vertical) != PeekBools.None ? Input.GetAxisRaw("Vertical") : 0,
                 0);
             peekOffset.Scale(peekPower);
+
             targetPos += peekOffset;
         }
         // Clamp targetPos and apply Offset
