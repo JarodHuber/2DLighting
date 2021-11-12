@@ -52,4 +52,10 @@ public class GameManager : MonoBehaviour
     {
         livesCounter.ToggleUI();
     }
+
+    public void TogglePlayerPause()
+    {
+        player.TogglePause();
+        cam.peek = !cam.peek;
+    }
 }

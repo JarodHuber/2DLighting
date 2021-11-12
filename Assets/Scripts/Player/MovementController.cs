@@ -8,8 +8,14 @@ public class MovementController : MonoBehaviour
     [SerializeField] Transform sprite = null;
     [SerializeField] Animator anim = null;
 
+    [HideInInspector]
+    public bool isPaused = false;
+
     private void Update()
     {
+        if (isPaused)
+            return;
+
         float hor = Input.GetAxisRaw("Horizontal");
         float vert = Input.GetAxisRaw("Vertical");
 

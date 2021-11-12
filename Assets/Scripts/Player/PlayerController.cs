@@ -6,6 +6,7 @@ using UnityEngine.Experimental.Rendering.Universal;
 
 public class PlayerController : MonoBehaviour
 {
+    public MovementController motor = null;
     [SerializeField] Light2D areaLight = null;
     [SerializeField] Counter lives = new Counter(3);
     [SerializeField] TMP_Text livesUI = null;
@@ -30,5 +31,10 @@ public class PlayerController : MonoBehaviour
         livesUI.text = lives.AmountRemaining.ToString();
 
         return true;
+    }
+
+    public void TogglePause()
+    {
+        motor.isPaused = !motor.isPaused;
     }
 }

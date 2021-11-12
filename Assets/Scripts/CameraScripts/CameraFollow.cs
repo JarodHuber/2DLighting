@@ -22,6 +22,9 @@ public class CameraFollow : MonoBehaviour
     [Header("Peek Variables")]
     [SerializeField] PeekBools peekAxes = (PeekBools)(-1);
     [SerializeField] Vector3 peekPower = new Vector3(1.5f, 3.0f);
+    
+    [HideInInspector]
+    public bool peek = true;
 
     Vector3 currentVelocity = new Vector3();
 
@@ -31,11 +34,15 @@ public class CameraFollow : MonoBehaviour
 
         if (followPlayer)
         {
-            Vector3 peekOffset = new Vector3(
-                (peekAxes & PeekBools.Horizontal) != PeekBools.None ? Input.GetAxisRaw("Horizontal") : 0,
-                (peekAxes & PeekBools.Vertical) != PeekBools.None ? Input.GetAxisRaw("Vertical") : 0,
-                0);
-            peekOffset.Scale(peekPower);
+            Vector3 peekOffset = new Vector3();
+            if (peek)
+            {
+                peekOffset = new Vector3(
+                    (peekAxes & PeekBools.Horizontal) != PeekBools.None ? Input.GetAxisRaw("Horizontal") : 0,
+                    (peekAxes & PeekBools.Vertical) != PeekBools.None ? Input.GetAxisRaw("Vertical") : 0,
+                    0);
+                peekOffset.Scale(peekPower);
+            }
 
             targetPos = (target.position + peekOffset).Clamp(min, max) + playerOffset;
         }
@@ -48,7 +55,6 @@ public class CameraFollow : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Vector3 bounds = max - min;
-        print(bounds);
         Gizmos.DrawWireCube(min + bounds / 2, bounds);
     }
 }
