@@ -14,7 +14,15 @@ public class MovementController : MonoBehaviour
     private void Update()
     {
         if (isPaused)
+        {
+            if (motor.body.Velocity != new Vector2())
+            {
+                motor.MoveInput(new Vector2());
+                anim.SetBool("moving", false);
+            }
+
             return;
+        }
 
         float hor = Input.GetAxisRaw("Horizontal");
         float vert = Input.GetAxisRaw("Vertical");

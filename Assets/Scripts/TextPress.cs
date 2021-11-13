@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
 
-public class TextTrigger : MonoBehaviour
+public class TextPress : MonoBehaviour, ITextBoxCaller
 {
     [SerializeField] TextBox textBox = null;
 
@@ -24,7 +24,7 @@ public class TextTrigger : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            textBox.UpdateText(textToShow, boxSize, boxPosition);
+            textBox.UpdateText(textToShow, boxSize, boxPosition, this);
             isTriggered = false;
         }
     }
@@ -38,5 +38,9 @@ public class TextTrigger : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
             isTriggered = false;
+    }
+
+    public void Callback()
+    {
     }
 }

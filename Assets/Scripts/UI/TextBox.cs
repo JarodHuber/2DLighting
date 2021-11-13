@@ -20,6 +20,7 @@ public class TextBox : MonoBehaviour
     bool textFinished = false;
     int charCounter = 0;
     int stringCounter = 0;
+    ITextBoxCaller caller;
 
     bool isActive = false;
 
@@ -68,6 +69,8 @@ public class TextBox : MonoBehaviour
             {
                 // No more text to show
                 HandleVariableSetting(new string[0]);
+                caller.Callback();
+                caller = null;
 
                 return;
             }
@@ -86,10 +89,12 @@ public class TextBox : MonoBehaviour
         gameObject.SetActive(isActive);
     }
 
-    public void UpdateText(string[] texts, Vector2 boxSize, Vector2 position)
+    public void UpdateText(string[] texts, Vector2 boxSize, Vector2 position, ITextBoxCaller textCaller)
     {
         boxTransform.sizeDelta = boxSize;
         boxTransform.anchoredPosition = position;
+
+        caller = textCaller;
 
         HandleVariableSetting(texts);
     }
@@ -108,4 +113,9 @@ public class TextBox : MonoBehaviour
         ToggleObject();
         manager.TogglePlayerPause();
     }
+}
+
+public interface ITextBoxCaller
+{
+    public void Callback();
 }
