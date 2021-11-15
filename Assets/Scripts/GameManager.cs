@@ -1,35 +1,33 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] 
+    [SerializeField]
     private PlayerController player = null;
-    [SerializeField] 
+    [SerializeField]
     private CameraFollow cam = null;
 
     [Space(10)]
-    [SerializeField] 
+    [SerializeField]
     private Light2D globalLight = null;
 
     [Space(10)]
-    [SerializeField] 
+    [SerializeField]
     private UISlide livesCounter = null;
-    [SerializeField] 
+    [SerializeField]
     private Timer livesVisibleDur = new Timer(3.0f);
-    [SerializeField] 
+    [SerializeField]
     private float showLivesDelay = 1.0f;
 
     [Space(10)]
     [SerializeField]
-    private Fade fadeIn = null;
+    private FadeCall fadeIn = null;
     [SerializeField]
-    private Fade fadeOut = null;
+    private FadeCall fadeOut = null;
 
-    Color globalLightColor = new Color();
+    private Color globalLightColor = new Color();
 
     private void Start()
     {
@@ -54,7 +52,7 @@ public class GameManager : MonoBehaviour
 
     public void Respawn()
     {
-        if(!player.Respawn())
+        if (!player.Respawn())
         {
             print("player died");
             fadeOut.HandleFade();
@@ -86,4 +84,9 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+}
+
+public interface ICaller
+{
+    public void Callback();
 }

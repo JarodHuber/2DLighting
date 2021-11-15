@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -12,7 +11,7 @@ public class KinematicBody : MonoBehaviour
     /// Motor driving this body
     /// </summary>
     public IKinematicMotor motor;
-    
+
     [Header("Body Definition")]
 #pragma warning disable 0649 // Assigned in Unity inspector
     [SerializeField]
@@ -46,7 +45,7 @@ public class KinematicBody : MonoBehaviour
     /// <summary>
     /// Position of the feet (aka bottom) of the body
     /// </summary>
-    public Vector3 FootPosition => transform.TransformPoint(col.offset + Vector2.down * col.size.y/2.0f);
+    public Vector3 FootPosition => transform.TransformPoint(col.offset + Vector2.down * col.size.y / 2.0f);
     /// <summary>
     /// Offset from the pivot of the body to the feet
     /// </summary>
@@ -64,7 +63,7 @@ public class KinematicBody : MonoBehaviour
             return g;
         }
     }
-    
+
     public Vector2 InternalVelocity { get; private set; }
     public Vector2 Velocity { get; private set; }
 
@@ -73,7 +72,7 @@ public class KinematicBody : MonoBehaviour
     public void CollideAndSlide(Vector2 bodyPosition, Vector2 bodyVelocity, Collider2D other)
     {
         DeferredCollideAndSlide(ref bodyPosition, ref bodyVelocity, other);
-        
+
         // apply movement immediately
         rbody.MovePosition(bodyPosition);
         InternalVelocity = bodyVelocity;
@@ -82,7 +81,7 @@ public class KinematicBody : MonoBehaviour
     public void DeferredCollideAndSlide(ref Vector2 bodyPosition, ref Vector2 bodyVelocity, Collider2D other)
     {
         // ignore self collision
-        if(other == col || other.isTrigger) { return; }
+        if (other == col || other.isTrigger) { return; }
 
         ColliderDistance2D collisionData = Physics2D.Distance(col, other);
 
@@ -92,30 +91,30 @@ public class KinematicBody : MonoBehaviour
             motor.OnMoveHit(ref bodyPosition, ref bodyVelocity, other, -collisionData.normal, -collisionData.distance);
         }
     }
-    
+
     public Collider2D[] Overlap(Vector2 bodyPosition, int layerMask = ~0, QueryTriggerInteraction queryMode = QueryTriggerInteraction.UseGlobal)
     {
         bodyPosition = GetCenterAtBodyPosition(bodyPosition);
         return Physics2D.OverlapBoxAll(bodyPosition, LocalBodySize, rbody.rotation, layerMask);
     }
-    
+
     public Collider2D[] Overlap(Vector2 bodyPosition, Vector2 bodyHalfExtents, int layerMask = ~0, QueryTriggerInteraction queryMode = QueryTriggerInteraction.UseGlobal)
     {
         bodyPosition = GetCenterAtBodyPosition(bodyPosition);
         return Physics2D.OverlapBoxAll(bodyPosition, bodyHalfExtents, rbody.rotation, layerMask);
     }
-    
+
     public RaycastHit2D[] Cast(Vector2 bodyPosition, Vector2 direction, float distance, int layerMask = ~0, QueryTriggerInteraction queryMode = QueryTriggerInteraction.UseGlobal)
     {
         bodyPosition = GetCenterAtBodyPosition(bodyPosition);
-        var allHits = Physics2D.BoxCastAll(bodyPosition, LocalBodySizeWithSkin/2, rbody.rotation, direction, distance, layerMask);
+        var allHits = Physics2D.BoxCastAll(bodyPosition, LocalBodySizeWithSkin / 2, rbody.rotation, direction, distance, layerMask);
 
         // TODO: this is terribly inefficient and generates garbage, please optimize this
         List<RaycastHit2D> filteredhits = new List<RaycastHit2D>(allHits);
-        filteredhits.RemoveAll( x => x.collider == col);
+        filteredhits.RemoveAll(x => x.collider == col);
         return filteredhits.ToArray();
     }
-    
+
     //
     // Unity Messages
     //
@@ -132,15 +131,15 @@ public class KinematicBody : MonoBehaviour
     private void FixedUpdate()
     {
         Vector2 startPosition = rbody.position;
-        
+
         motor.OnPreMove();
-        
+
         InternalVelocity = motor.UpdateVelocity(InternalVelocity);
 
         //
         // integrate external forces
         //
-        
+
         // apply gravity (if enabled)
         if (useGravity)
         {
@@ -150,7 +149,7 @@ public class KinematicBody : MonoBehaviour
         rbody.position += (InternalVelocity * Time.deltaTime);
         Vector2 projectedPos = rbody.position;
         Vector2 projectedVel = InternalVelocity;
-        
+
         //
         // depenetrate from overlapping objects
         //
@@ -164,24 +163,24 @@ public class KinematicBody : MonoBehaviour
         //       we need to assign it directly to the collide prior to calling it and then
         //       revert the change afterwards
         col.size = sizeWithSkin;
-        
+
         foreach (var candidate in candidates)
         {
             DeferredCollideAndSlide(ref projectedPos, ref projectedVel, candidate);
         }
-        
+
         // HACK: restoring size (see above HACK)
         col.size = sizeOriginal;
-        
+
         // callback: pre-processing move before applying 
         motor.OnFinishMove(ref projectedPos, ref projectedVel);
-        
+
         // apply move
         rbody.MovePosition(projectedPos);
         InternalVelocity = projectedVel;
 
         Velocity = (projectedPos - startPosition) / Time.fixedDeltaTime;
-        
+
         // callback for after move is complete
         motor.OnPostMove();
     }
@@ -219,12 +218,12 @@ public interface IKinematicMotor
     void OnMoveHit(ref Vector2 curPosition, ref Vector2 curVelocity, Collider2D other, Vector2 direction, float pen);
 
     // TODO: Make these callbacks instead of part of the interface
-    
+
     /// <summary>
     /// Called before the body has begun moving
     /// </summary>
     void OnPreMove();
-    
+
     /// <summary>
     /// Called before the move is applied to the body.
     ///
@@ -234,7 +233,7 @@ public interface IKinematicMotor
     /// <param name="curPosition">Position that the body would move to</param>
     /// <param name="curVelocity">Velocity that the body would move with on next update</param>
     void OnFinishMove(ref Vector2 curPosition, ref Vector2 curVelocity);
-    
+
     /// <summary>
     /// Called after the body has moved to its final position for this frame
     /// </summary>

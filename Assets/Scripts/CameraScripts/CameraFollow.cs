@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
@@ -13,21 +11,24 @@ public class CameraFollow : MonoBehaviour
     }
 
     public ICameraHolder target;
-    [SerializeField] float smoothSpeed = 0.2f;
-    [SerializeField] 
-    Vector2 min = new Vector2(-5.0f, -5.0f), 
+    [SerializeField]
+    private float smoothSpeed = 0.2f;
+    [SerializeField]
+    private Vector2 min = new Vector2(-5.0f, -5.0f),
             max = new Vector2(5.0f, 5.0f);
-    [Tooltip("Offset for positional z should always be -10.0f")]
-    [SerializeField] float cameraZOffset = -10.0f;
+    [SerializeField, Tooltip("Offset for positional z should always be -10.0f")]
+    private float cameraZOffset = -10.0f;
 
     [Header("Peek Variables")]
-    [SerializeField] PeekBools peekAxes = (PeekBools)(-1);
-    [SerializeField] Vector3 peekPower = new Vector3(1.5f, 3.0f);
-    
+    [SerializeField]
+    private PeekBools peekAxes = (PeekBools)(-1);
+    [SerializeField]
+    private Vector3 peekPower = new Vector3(1.5f, 3.0f);
+
     [HideInInspector]
     public bool peek = true;
 
-    Vector3 currentVelocity = new Vector3();
+    private Vector3 currentVelocity = new Vector3();
 
     private void FixedUpdate()
     {

@@ -4,7 +4,8 @@
 public class Counter
 {
     [Tooltip("the Maximum value this counter can reach")]
-    [SerializeField] protected float max;
+    [SerializeField]
+    protected float max;
     protected float cur;
 
     /// <summary>
@@ -47,6 +48,14 @@ public class Counter
         this.max = max;
     }
 
+
+    public void SetMax(float newMax, bool resetCur = false)
+    {
+        max = newMax;
+
+        if (resetCur)
+            cur = 0.0f;
+    }
 
     /// <summary>
     /// Reset the counter to the startPoint

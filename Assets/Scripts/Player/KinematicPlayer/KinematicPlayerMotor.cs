@@ -7,21 +7,21 @@ public class KinematicPlayerMotor : MonoBehaviour, IKinematicMotor
 {
     [Header("Body")]
     public KinematicBody body;
-    
+
     [Header("Common Movement Settings")]
     public float moveSpeed = 8.0f;
     public float jumpHeight = 2.0f;
-    
+
     [Header("Ground Movement")]
     public float maxGroundAngle = 75f;
     public float groundAccel = 200.0f;
     public float groundFriction = 12.0f;
     public LayerMask groundLayers;
     public float maxGroundAdhesionDistance = 0.1f;
-    
+
     public bool Grounded { get; private set; }
     private bool wasGrounded;
-    
+
     [Header("Air Movement")]
     public float airAccel = 50.0f;
     public float airFriction = 3.0f;
@@ -49,11 +49,11 @@ public class KinematicPlayerMotor : MonoBehaviour, IKinematicMotor
     {
         return jumpedThisFrame;
     }
-    
+
     //
     // Motor Utilities
     //
-    
+
     public Vector2 ClipVelocity(Vector2 inputVelocity, Vector2 normal)
     {
         return inputVelocity - (normal * Vector2.Dot(inputVelocity, normal));
@@ -66,28 +66,28 @@ public class KinematicPlayerMotor : MonoBehaviour, IKinematicMotor
     public Vector2 UpdateVelocity(Vector2 oldVelocity)
     {
         Vector2 velocity = oldVelocity;
-        
+
         //
         // integrate player forces
         //
-        
+
         if (jumpWish)
         {
             jumpWish = false;
 
-            if(wasGrounded)
+            if (wasGrounded)
             {
                 jumpedThisFrame = true;
 
                 velocity.y += Mathf.Sqrt(-2.0f * body.EffectiveGravity.y * jumpHeight);
             }
         }
-        
+
         bool isGrounded = !jumpedThisFrame && wasGrounded;
 
         float effectiveAccel = (isGrounded ? groundAccel : airAccel);
         float effectiveFriction = (isGrounded ? groundFriction : airFriction);
-        
+
         // apply friction
         float keepY = velocity.y;
         velocity.y = 0.0f; // don't consider vertical movement in friction calculation
@@ -117,7 +117,7 @@ public class KinematicPlayerMotor : MonoBehaviour, IKinematicMotor
     public void OnMoveHit(ref Vector2 curPosition, ref Vector2 curVelocity, Collider2D other, Vector2 direction, float pen)
     {
         Vector2 clipped = ClipVelocity(curVelocity, direction);
-        
+
         // floor
         if (groundLayers.Test(other.gameObject.layer) &&  // require ground layer
             direction.y > 0 &&                                      // direction check
@@ -126,7 +126,7 @@ public class KinematicPlayerMotor : MonoBehaviour, IKinematicMotor
             // only change Y-position if bumping into the floor
             curPosition.y += direction.y * (pen);
             curVelocity.y = clipped.y;
-            
+
             Grounded = true;
         }
         // other
@@ -149,16 +149,16 @@ public class KinematicPlayerMotor : MonoBehaviour, IKinematicMotor
 
         // early exit if we're already grounded or jumping
         if (Grounded || jumpedThisFrame || !wasGrounded) return;
-        
+
         var groundCandidates = body.Cast(curPosition, Vector3.down, maxGroundAdhesionDistance, groundLayers);
         foreach (var candidate in groundCandidates)
         {
             // ignore colliders that we start inside of - it's either us or something bad happened
-            if(candidate.point == Vector2.zero) { continue; }
+            if (candidate.point == Vector2.zero) { continue; }
 
             // NOTE: This code assumes that the ground will always be below us
             curPosition.y = candidate.point.y - body.FootOffset.y - body.contactOffset;
-            
+
             // Snap to the ground - perform any necessary collision and sliding logic
             body.DeferredCollideAndSlide(ref curPosition, ref curVelocity, candidate.collider);
             //Debug.Assert(snapPosition.y >= candidate.point.y, "Snapping put us underneath the ground?!");
@@ -171,7 +171,7 @@ public class KinematicPlayerMotor : MonoBehaviour, IKinematicMotor
         // record grounded status for next frame
         wasGrounded = Grounded;
     }
-    
+
     //
     // Unity Messages
     //
@@ -181,9 +181,9 @@ public class KinematicPlayerMotor : MonoBehaviour, IKinematicMotor
         body.motor = this;
         OnValidate();
     }
-    
+
     private void OnValidate()
     {
-        if(body == null ||body.BodyCollider == null) { return; }
+        if (body == null || body.BodyCollider == null) { return; }
     }
 }

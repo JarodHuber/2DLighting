@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BackgroundFollow : MonoBehaviour
@@ -18,7 +16,7 @@ public class BackgroundFollow : MonoBehaviour
 
         backdrops = new SpriteRenderer[transform.childCount];
 
-        for(int x = 0; x < backdrops.Length; ++x)
+        for (int x = 0; x < backdrops.Length; ++x)
             backdrops[x] = transform.GetChild(x).GetComponent<SpriteRenderer>();
     }
 

@@ -1,28 +1,32 @@
 using NaughtyAttributes;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class TextBox : MonoBehaviour
 {
     [SerializeField]
-    GameManager manager = null;
+    private GameManager manager = null;
     [Tooltip("How many seconds until the next char appears"), SerializeField]
-    Timer textSpeed = new Timer(.01f);
-    [SerializeField] 
-    TMP_Text text = null;
-    [SerializeField] 
-    RectTransform boxTransform = null;
+    private Timer textSpeed = new Timer(.01f);
 
+    [Space(10)]
+    [SerializeField]
+    private TMP_Text text = null;
+    [SerializeField]
+    private GameObject buttonPompt = null;
+    [SerializeField]
+    private RectTransform boxTransform = null;
+
+    [Space(10)]
     [SerializeField, ReadOnly, TextArea]
-    string[] textToShow = new string[0];
-    bool textFinished = false;
-    int charCounter = 0;
-    int stringCounter = 0;
-    ITextBoxCaller caller;
+    private string[] textToShow = new string[0];
 
-    bool isActive = false;
+    private bool textFinished = false;
+    private int charCounter = 0;
+    private int stringCounter = 0;
+    private ICaller caller;
+
+    private bool isActive = false;
 
     private void Update()
     {
@@ -31,11 +35,7 @@ public class TextBox : MonoBehaviour
             // If the text is not finished and the player presses E, reveal all of the text
             if (Input.GetKeyDown(KeyCode.E))
             {
-                text.maxVisibleCharacters = text.textInfo.characterCount;
-                charCounter = 0;
-                textSpeed.Reset();
-
-                textFinished = true;
+                FinishText();
                 return;
             }
 
@@ -48,11 +48,7 @@ public class TextBox : MonoBehaviour
                 // All characters have been revealed
                 if (visibleCount == 0)
                 {
-                    text.maxVisibleCharacters = text.textInfo.characterCount;
-                    charCounter = 0;
-
-                    textFinished = true;
-
+                    FinishText();
                     return;
                 }
 
@@ -65,13 +61,15 @@ public class TextBox : MonoBehaviour
         // If the text is finished revealing and the player presses E, cycle to the next string
         if (Input.GetKeyDown(KeyCode.E))
         {
+            buttonPompt.SetActive(false);
+
             if (++stringCounter >= textToShow.Length)
             {
                 // No more text to show
-                HandleVariableSetting(new string[0]);
                 caller.Callback();
                 caller = null;
 
+                HandleVariableSetting(new string[0]);
                 return;
             }
 
@@ -82,14 +80,25 @@ public class TextBox : MonoBehaviour
         }
     }
 
+    private void FinishText()
+    {
+        text.maxVisibleCharacters = text.textInfo.characterCount;
+        charCounter = 0;
+        textSpeed.Reset();
 
-    void ToggleObject()
+        textFinished = true;
+
+        buttonPompt.SetActive(true);
+    }
+
+
+    private void ToggleObject()
     {
         isActive = !isActive;
         gameObject.SetActive(isActive);
     }
 
-    public void UpdateText(string[] texts, Vector2 boxSize, Vector2 position, ITextBoxCaller textCaller)
+    public void UpdateText(string[] texts, Vector2 boxSize, Vector2 position, ICaller textCaller)
     {
         boxTransform.sizeDelta = boxSize;
         boxTransform.anchoredPosition = position;
@@ -99,7 +108,7 @@ public class TextBox : MonoBehaviour
         HandleVariableSetting(texts);
     }
 
-    void HandleVariableSetting(string[] stringArr)
+    private void HandleVariableSetting(string[] stringArr)
     {
         textToShow = stringArr;
 
@@ -113,9 +122,4 @@ public class TextBox : MonoBehaviour
         ToggleObject();
         manager.TogglePlayerPause();
     }
-}
-
-public interface ITextBoxCaller
-{
-    public void Callback();
 }

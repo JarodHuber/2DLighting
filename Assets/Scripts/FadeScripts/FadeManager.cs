@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 using NaughtyAttributes;
+using UnityEngine;
+using UnityEngine.UI;
 
 public enum FadeType
 {
@@ -14,21 +11,24 @@ public enum FadeType
 
 public class FadeManager : MonoBehaviour
 {
-    [SerializeField] 
+    [SerializeField]
     private Image fadeImage = null;
-    [SerializeField] 
-    private Timer fadeTime = new Timer(1);
+
+    [Space(10)]
     [SerializeField, ReadOnly]
     private FadeType fadeType = FadeType.FadeIn;
+    [SerializeField, ReadOnly]
+    private Timer fadeTime = new Timer(1);
 
-    float startingOpacity, targetOpacity;
-    bool isFading = false;
-    Fade caller = null;
+    private float startingOpacity, targetOpacity;
+    private bool isFading = false;
+    private ICaller caller = null;
 
-    public void BeginFade(FadeType fade, Fade fadeCaller)
+    public void BeginFade(FadeType fade, FadeCall fadeCaller, float fadeDur)
     {
         fadeType = fade;
         isFading = true;
+        fadeTime.SetMax(fadeDur, true);
 
         switch (fadeType)
         {
@@ -95,7 +95,7 @@ public class FadeManager : MonoBehaviour
         }
 
         isFading = false;
-        caller.broadcastFadeComplete.Invoke();
+        caller.Callback();
         caller = null;
     }
 }

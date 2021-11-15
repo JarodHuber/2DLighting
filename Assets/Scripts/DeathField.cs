@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DeathField : MonoBehaviour
 {
-    [SerializeField] GameManager manager = null;
+    [SerializeField]
+    private GameManager manager = null;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

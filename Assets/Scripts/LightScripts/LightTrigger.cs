@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.Experimental.Rendering.Universal;
 
 public class LightTrigger : MonoBehaviour
@@ -39,7 +35,7 @@ public class LightTrigger : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if(target == collision.transform)
+        if (target == collision.transform)
         {
             lerping = false;
             target = null;
