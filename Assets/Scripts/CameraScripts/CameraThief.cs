@@ -1,20 +1,29 @@
 using UnityEngine;
 
-public class CameraThief : MonoBehaviour
+public class CameraThief : MonoBehaviour, ICameraHolder
 {
     [SerializeField] CameraFollow toSteal = null;
+    [SerializeField] Vector3 cameraOffset = new Vector3(0.0f, 0.0f, 5.0f);
 
     ICameraHolder stolenFrom = null;
     bool wasUsingPeekBeforeTheft = false;
 
-    public void StealCamera(ICameraHolder toGive)
+    public Vector3 CameraOffset()
+    {
+        return cameraOffset;
+    }
+    public Vector3 Position()
+    {
+        return transform.position;
+    }
+
+    public void StealCamera()
     {
         stolenFrom = toSteal.target;
-        toSteal.target = toGive;
+        toSteal.target = this;
         wasUsingPeekBeforeTheft = toSteal.peek;
         toSteal.peek = false;
     }
-
     public void ReturnCamera()
     {
         toSteal.target = stolenFrom;

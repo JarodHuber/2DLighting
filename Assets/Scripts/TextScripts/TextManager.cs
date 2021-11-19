@@ -2,7 +2,7 @@ using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
 
-public class TextBox : MonoBehaviour
+public class TextManager : MonoBehaviour
 {
     [SerializeField]
     private GameManager manager = null;
@@ -15,6 +15,8 @@ public class TextBox : MonoBehaviour
     [SerializeField]
     private GameObject buttonPompt = null;
     [SerializeField]
+    private GameObject boxObject = null;
+    [SerializeField]
     private RectTransform boxTransform = null;
 
     [Space(10)]
@@ -24,16 +26,19 @@ public class TextBox : MonoBehaviour
     private bool textFinished = false;
     private int charCounter = 0;
     private int stringCounter = 0;
-    private ICaller caller;
+    private SystemCaller caller;
 
     private bool isActive = false;
 
     private void Update()
     {
+        if (!isActive)
+            return;
+
         if (!textFinished)
         {
             // If the text is not finished and the player presses E, reveal all of the text
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(PlayerInputs.GetKey("Interact")))
             {
                 FinishText();
                 return;
@@ -67,7 +72,6 @@ public class TextBox : MonoBehaviour
             {
                 // No more text to show
                 caller.Callback();
-                caller = null;
 
                 HandleVariableSetting(new string[0]);
                 return;
@@ -95,10 +99,10 @@ public class TextBox : MonoBehaviour
     private void ToggleObject()
     {
         isActive = !isActive;
-        gameObject.SetActive(isActive);
+        boxObject.SetActive(isActive);
     }
 
-    public void UpdateText(string[] texts, Vector2 boxSize, Vector2 position, ICaller textCaller)
+    public void UpdateText(string[] texts, Vector2 boxSize, Vector2 position, SystemCaller textCaller)
     {
         boxTransform.sizeDelta = boxSize;
         boxTransform.anchoredPosition = position;

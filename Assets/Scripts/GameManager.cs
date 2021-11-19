@@ -37,8 +37,7 @@ public class GameManager : MonoBehaviour
 
         livesCounter.ToggleUI();
 
-        TogglePlayerPause();
-        fadeIn.HandleFade();
+        fadeIn.Broadcast();
     }
 
     private void Update()
@@ -55,7 +54,7 @@ public class GameManager : MonoBehaviour
         if (!player.Respawn())
         {
             print("player died");
-            fadeOut.HandleFade();
+            fadeOut.Broadcast();
             return;
         }
 
@@ -77,16 +76,13 @@ public class GameManager : MonoBehaviour
     public void TogglePlayerPause()
     {
         player.TogglePause();
-        cam.peek = !cam.peek;
+
+        if ((Object)cam.target == player) 
+            cam.peek = !player.IsPaused;
     }
 
     public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
-}
-
-public interface ICaller
-{
-    public void Callback();
 }

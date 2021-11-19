@@ -1,10 +1,10 @@
 using NaughtyAttributes;
 using UnityEngine;
 
-public class TextPress : MonoBehaviour
+public class TriggerPress : MonoBehaviour
 {
     [SerializeField]
-    private TextCall textCall = null;
+    private SystemCaller caller = null;
     [SerializeField]
     private GameObject activateButton = null;
 
@@ -17,16 +17,16 @@ public class TextPress : MonoBehaviour
         if (!isTriggered)
             return;
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(PlayerInputs.GetKey("Interact")))
         {
-            textCall.CallText();
+            caller.Broadcast();
             SetTrigger(false);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision.CompareTag("Player") && (caller is ConditionalCaller cond && cond.ConditionMet()))
             SetTrigger(true);
     }
     private void OnTriggerExit2D(Collider2D collision)

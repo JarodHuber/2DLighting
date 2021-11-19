@@ -17,6 +17,7 @@ public class MovementController : MonoBehaviour
             {
                 motor.MoveInput(new Vector2());
                 anim.SetBool("moving", false);
+                sprite.GetChild(0).localRotation = Quaternion.identity;
             }
 
             return;

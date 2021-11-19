@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class FadeCall : MonoBehaviour, ICaller
+public class FadeCall : SystemCaller
 {
     [SerializeField]
     private FadeManager fManager = null;
@@ -13,12 +13,12 @@ public class FadeCall : MonoBehaviour, ICaller
     [Space(10)]
     public UnityEvent broadcastFadeComplete;
 
-    public void HandleFade()
+    public override void Broadcast()
     {
         fManager.BeginFade(fadeType, this, fadeDur);
     }
 
-    public void Callback()
+    public override void Callback()
     {
         broadcastFadeComplete.Invoke();
     }

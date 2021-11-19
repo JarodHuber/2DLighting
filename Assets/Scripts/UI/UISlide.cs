@@ -4,10 +4,16 @@ public class UISlide : MonoBehaviour
 {
     public bool visible = false;
     public bool sliding = false;
-    [SerializeField] Vector3 hiddenPos = new Vector3();
-    [SerializeField] Vector3 visiblePos = new Vector3();
-    [SerializeField] Timer slideDur = new Timer(1.0f);
-    [SerializeField] RectTransform slider = null;
+    [SerializeField] 
+    private Vector3 hiddenPos = new Vector3();
+    [SerializeField] 
+    private Vector3 visiblePos = new Vector3();
+    [SerializeField] 
+    private Timer slideDur = new Timer(1.0f);
+    [SerializeField] 
+    private RectTransform slider = null;
+
+    public bool IsVisible { get => visible; }
 
     private void Update()
     {

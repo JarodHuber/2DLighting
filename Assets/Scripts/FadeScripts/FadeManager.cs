@@ -12,6 +12,8 @@ public enum FadeType
 public class FadeManager : MonoBehaviour
 {
     [SerializeField]
+    private GameManager manager = null;
+    [SerializeField]
     private Image fadeImage = null;
 
     [Space(10)]
@@ -22,7 +24,7 @@ public class FadeManager : MonoBehaviour
 
     private float startingOpacity, targetOpacity;
     private bool isFading = false;
-    private ICaller caller = null;
+    private SystemCaller caller = null;
 
     public void BeginFade(FadeType fade, FadeCall fadeCaller, float fadeDur)
     {
@@ -44,6 +46,7 @@ public class FadeManager : MonoBehaviour
         }
 
         caller = fadeCaller;
+        manager.TogglePlayerPause();
     }
     private void BeginFade(FadeType fade)
     {
@@ -58,8 +61,8 @@ public class FadeManager : MonoBehaviour
                 targetOpacity = 1.0f;
                 break;
             case FadeType.FadeIn:
-                startingOpacity = 0.0f;
-                targetOpacity = 1.0f;
+                startingOpacity = 1.0f;
+                targetOpacity = 0.0f;
                 break;
         }
     }
@@ -94,8 +97,9 @@ public class FadeManager : MonoBehaviour
             return;
         }
 
+        manager.TogglePlayerPause();
+
         isFading = false;
         caller.Callback();
-        caller = null;
     }
 }

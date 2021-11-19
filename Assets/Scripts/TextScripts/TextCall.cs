@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class TextCall : MonoBehaviour, ICaller
+public class TextCall : SystemCaller
 {
     [SerializeField]
-    private TextBox textBox = null;
+    private TextManager textBox = null;
 
     [Space(10)]
     [SerializeField, TextArea]
@@ -15,12 +15,12 @@ public class TextCall : MonoBehaviour, ICaller
     [Space(10)]
     public UnityEvent broadcastTextBoxComplete;
 
-    public void Callback()
+    public override void Callback()
     {
         broadcastTextBoxComplete.Invoke();
     }
 
-    public void CallText()
+    public override void Broadcast()
     {
         textBox.UpdateText(textToShow, boxSize, boxPosition, this);
     }
