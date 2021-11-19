@@ -83,22 +83,34 @@ public class KinematicPlayerMotor : MonoBehaviour, IKinematicMotor
             }
         }
 
-        bool isGrounded = !jumpedThisFrame && wasGrounded;
+        bool isGrounded = !body.useGravity || (!jumpedThisFrame && wasGrounded);
 
         float effectiveAccel = (isGrounded ? groundAccel : airAccel);
         float effectiveFriction = (isGrounded ? groundFriction : airFriction);
 
         // apply friction
-        float keepY = velocity.y;
-        velocity.y = 0.0f; // don't consider vertical movement in friction calculation
-        float prevSpeed = velocity.magnitude;
-        if (prevSpeed != 0)
+        if (body.useGravity) // if useGravity, side scroll and thus sometimes in air
         {
-            float frictionAccel = prevSpeed * effectiveFriction * Time.deltaTime;
-            velocity *= Mathf.Max(prevSpeed - frictionAccel, 0) / prevSpeed;
-        }
+            float keepY = velocity.y;
+            velocity.y = 0.0f; // don't consider vertical movement in friction calculation
+            float prevSpeed = velocity.magnitude;
+            if (prevSpeed != 0)
+            {
+                float frictionAccel = prevSpeed * effectiveFriction * Time.deltaTime;
+                velocity *= Mathf.Max(prevSpeed - frictionAccel, 0) / prevSpeed;
+            }
 
-        velocity.y = keepY;
+            velocity.y = keepY;
+        }
+        else // If not, top down and never in air
+        {
+            float prevSpeed = velocity.magnitude;
+            if (prevSpeed != 0)
+            {
+                float frictionAccel = prevSpeed * effectiveFriction * Time.deltaTime;
+                velocity *= Mathf.Max(prevSpeed - frictionAccel, 0) / prevSpeed;
+            }
+        }
 
         // apply movement
         moveWish = Vector2.ClampMagnitude(moveWish, 1);

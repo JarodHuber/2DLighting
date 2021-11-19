@@ -1,4 +1,5 @@
 using UnityEngine;
+using NaughtyAttributes;
 
 public class MovementController : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class MovementController : MonoBehaviour
 
     [HideInInspector]
     public bool isPaused = false;
+
+    [SerializeField, ReadOnly]
+    private bool onLadder = false;
 
     private void Update()
     {
@@ -26,7 +30,7 @@ public class MovementController : MonoBehaviour
         float hor = Input.GetAxisRaw("Horizontal");
         float vert = Input.GetAxisRaw("Vertical");
 
-        motor.MoveInput(new Vector2(hor, 0));
+        motor.MoveInput(new Vector2(hor, (onLadder ? vert : 0)));
 
         if (hor > 0)
             sprite.rotation = Quaternion.identity;
@@ -46,5 +50,23 @@ public class MovementController : MonoBehaviour
         if (motor.JumpTrigger())
             anim.SetTrigger("Jump");
         anim.SetFloat("VerSpeed", motor.body.Velocity.y);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Ladder"))
+        {
+            onLadder = true;
+            motor.body.useGravity = false;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (onLadder && collision.CompareTag("Ladder"))
+        {
+            onLadder = false;
+            motor.body.useGravity = true;
+        }
     }
 }

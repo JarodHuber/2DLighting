@@ -19,8 +19,8 @@ public class KinematicBody : MonoBehaviour
     public BoxCollider2D BodyCollider => col;
     [SerializeField]
     private Rigidbody2D rbody;
-    [SerializeField]
-    private bool useGravity = true;
+
+    public bool useGravity = true;
 #pragma warning restore 0649 // Assigned in Unity inspector
     /// <summary>
     /// Size of the box body in local space
